@@ -29,6 +29,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="18sp"
+        android:transitionName="Logo_desc"
         android:text="Sign In to continue"
 
         />
@@ -43,6 +44,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Username"
+            android:transitionName="username_tran"
             android:id="@+id/username"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
             <com.google.android.material.textfield.TextInputEditText
@@ -54,6 +56,7 @@
             android:layout_height="wrap_content"
             android:hint="Password"
             android:id="@+id/password"
+            android:transitionName="password_tran"
             app:passwordToggleEnabled="true"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
             <com.google.android.material.textfield.TextInputEditText
@@ -70,15 +73,18 @@
             android:elevation="0dp"
             android:layout_margin="5dp"/>
         <Button
+            android:id="@+id/login"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#000"
             android:text="Go"
+            android:transitionName="button_tran"
             android:textColor="#fff"
             android:layout_marginTop="5dp"
             android:layout_marginBottom="5dp"
             />
         <Button
+            android:id="@+id/signUp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#00000000"
@@ -87,6 +93,7 @@
             android:elevation="0dp"
             android:layout_margin="5dp"
             android:fontFamily="@font/antic"
+            android:transitionName="login_signup_tran"
             android:textColor="#000"/>
     </LinearLayout>
 
