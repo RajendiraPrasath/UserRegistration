@@ -23,7 +23,7 @@
             android:name=".LoginActivity"
             android:theme="@style/AppTheme.NoActionBar.Transition" />
         <activity android:name=".SignUpActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar.Transition">
         </activity>
 
         <meta-data
