@@ -29,6 +29,7 @@
         android:fontFamily="@font/bangers"
         android:text="Bull's Rent"
         android:textAlignment="center"
+        android:layout_gravity="center_horizontal"
         android:textSize="70sp"
         android:transitionName="Logo_text"
         app:layout_constraintTop_toBottomOf="@+id/splashimage"
