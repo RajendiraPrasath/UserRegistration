@@ -35,6 +35,7 @@ class VerifyPhoneActivity : AppCompatActivity() {
 
         }
         override fun onVerificationFailed(e: FirebaseException) {
+            Log.i("verification faild ",e.message.toString())
          Toast.makeText(this@VerifyPhoneActivity,e.message.toString(),Toast.LENGTH_SHORT).show()
         }
         override fun onCodeSent(
@@ -97,10 +98,11 @@ class VerifyPhoneActivity : AppCompatActivity() {
                 //startActivity(userProfile)
                 var signUpIntent = Intent()
                 signUpIntent.putExtra("message","Success")
-                setResult(Activity.RESULT_OK,signUpIntent)
+                setResult(RESULT_OK,signUpIntent)
                 finish()
             } else {
                 Toast.makeText(this@VerifyPhoneActivity,task.exception!!.message.toString(),Toast.LENGTH_SHORT).show()
+                Log.i("task unsuccessfull ",task.exception!!.toString())
             }
         }
     }

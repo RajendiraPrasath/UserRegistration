@@ -21,7 +21,7 @@ class LoginActivity : AppCompatActivity() {
     lateinit var image: ImageView
     lateinit var logoText: TextView
     lateinit var sloganText: TextView
-    lateinit var userName: TextInputLayout
+    lateinit var phone: TextInputLayout
     lateinit var password: TextInputLayout
     lateinit var login: Button
     private lateinit var dbReference: DatabaseReference
@@ -34,7 +34,7 @@ class LoginActivity : AppCompatActivity() {
         image = findViewById(R.id.logoImage) as ImageView
         logoText = findViewById(R.id.logo_name) as TextView
         sloganText = findViewById(R.id.slogan_name) as TextView
-        userName = findViewById(R.id.username) as TextInputLayout
+        phone = findViewById(R.id.username) as TextInputLayout
         password = findViewById(R.id.password) as TextInputLayout
         login = findViewById(R.id.login) as Button
         dbReference = FirebaseDatabase.getInstance().getReference("users");
@@ -47,7 +47,7 @@ class LoginActivity : AppCompatActivity() {
                     androidx.core.util.Pair<View, String>(image,"Logo_image"),
                     androidx.core.util.Pair<View, String>(logoText,"Logo_text"),
                     androidx.core.util.Pair<View, String>(sloganText,"Logo_desc"),
-                    androidx.core.util.Pair<View, String>(userName,"username_tran"),
+                    androidx.core.util.Pair<View, String>(phone,"username_tran"),
                     androidx.core.util.Pair<View, String>(password,"password_tran"),
                     androidx.core.util.Pair<View, String>(login,"button_tran"),
                     androidx.core.util.Pair<View, String>(signUp,"login_signup_tran"))
@@ -68,15 +68,15 @@ class LoginActivity : AppCompatActivity() {
     }
     private fun validateUserName() : Boolean
     {
-        val usernameValue = userName.editText!!.text.toString()
+        val usernameValue = phone.editText!!.text.toString()
 
         if(usernameValue.isNullOrEmpty())
         {
-            userName.error = "Field Cannot be empty"
+            phone.error = "Field Cannot be empty"
             return false
         }
         else {
-            userName.error = null
+            phone.error = null
             return true
         }
 
@@ -97,9 +97,9 @@ class LoginActivity : AppCompatActivity() {
     }
     private fun isUser()
     {
-        val enteruserName = userName.editText!!.text.toString()
+        val enteruserName = phone.editText!!.text.toString()
         val enterpassword = password.editText!!.text.toString()
-        var checkUser = dbReference.orderByChild("userName").equalTo(enteruserName)
+        var checkUser = dbReference.orderByChild("phoneNo").equalTo(enteruserName)
         checkUser.addListenerForSingleValueEvent( object :ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
 
@@ -117,15 +117,22 @@ class LoginActivity : AppCompatActivity() {
                         val databaseValue = User(name.toString(),username.toString(),email.toString(),phoneNo.toString(),password.toString())
                         val userProfile = Intent(this@LoginActivity,UserProfileActivity::class.java)
                         userProfile.putExtra("Obj",databaseValue)
-                        startActivity(userProfile)
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+
+                            val options = ActivityOptionsCompat.makeSceneTransitionAnimation(this@LoginActivity,
+                                androidx.core.util.Pair<View, String>(image,"Logo_image"),
+                                androidx.core.util.Pair<View, String>(logoText,"Logo_text"),
+                                androidx.core.util.Pair<View, String>(sloganText,"Logo_desc"))
+                        startActivity(userProfile,options.toBundle())
+                        }
 
                     } else {
                         password.error = "Wrong Password"
                         password.requestFocus()
                     }
                 } else {
-                    userName.error = "No such User exist"
-                    userName.requestFocus()
+                    phone.error = "No such User exist"
+                    phone.requestFocus()
                 }
 
 

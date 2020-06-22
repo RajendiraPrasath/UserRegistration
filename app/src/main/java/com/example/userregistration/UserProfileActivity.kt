@@ -80,7 +80,7 @@ class UserProfileActivity : AppCompatActivity() {
             return false
         }else if(!databasefullname.equals(fullName.editableText.toString()))
         {
-            dbReference.child(databaseusername).child("fullName").setValue(fullName.editableText.toString())
+            dbReference.child(databasephone).child("fullName").setValue(fullName.editableText.toString())
             userfullname.text = fullName.editableText.toString()
             databasefullname = fullName.editableText.toString()
             email.error = null
@@ -97,7 +97,7 @@ class UserProfileActivity : AppCompatActivity() {
         }else if(!databaseemail.equals(email.editableText.toString()))
         {
             if(isValidEmail(email.editableText.toString())) {
-                dbReference.child(databaseusername).child("email")
+                dbReference.child(databasephone).child("email")
                     .setValue(email.editableText.toString())
                 databaseemail = email.editableText.toString()
                 email.error = null

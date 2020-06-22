@@ -51,6 +51,7 @@ class SignUpActivity : AppCompatActivity() {
                 return@setOnClickListener
             } else {
                 verifyPhone(phoneno.editText!!.text.toString())
+                //registerUser()
             }
 
         }
@@ -203,7 +204,7 @@ class SignUpActivity : AppCompatActivity() {
             email.editText!!.text.toString(),
             phoneno.editText!!.text.toString(),
             password.editText!!.text.toString())
-           dbReference.child("users").child(fullName.editText!!.text.toString()).setValue(user)
+           dbReference.child("users").child(phoneno.editText!!.text.toString()).setValue(user)
             dbReference.addValueEventListener(object: ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot){
                 val userData=dataSnapshot.getValue(User::class.java)
@@ -217,8 +218,17 @@ class SignUpActivity : AppCompatActivity() {
                     val userProfile = Intent(this@SignUpActivity,UserProfileActivity::class.java)
                     userProfile.putExtra("Obj",user)
                     userProfile.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    startActivity(userProfile)
-                    finish()
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+
+                        val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                            this@SignUpActivity,
+                            androidx.core.util.Pair<View, String>(image, "Logo_image"),
+                            androidx.core.util.Pair<View, String>(logoName, "Logo_text"),
+                            androidx.core.util.Pair<View, String>(sloganName, "Logo_desc")
+                        )
+                        startActivity(userProfile)
+                    }
+                    //finish()
                 }
 
 

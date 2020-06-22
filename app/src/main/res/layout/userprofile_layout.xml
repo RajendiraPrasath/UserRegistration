@@ -19,6 +19,7 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_centerVertical="true"
+            android:transitionName="Logo_image"
             android:src="@mipmap/ic_launcher_round"/>
         <TextView
             android:id="@+id/fullname"
@@ -26,6 +27,7 @@
             android:layout_height="wrap_content"
             android:text="Rajendira Prasath"
             android:textSize="20sp"
+            android:transitionName="Logo_text"
             android:fontFamily="@font/bungee"
             android:layout_toRightOf="@+id/profile_image"
             android:layout_centerVertical="true"
@@ -37,6 +39,7 @@
             android:layout_height="wrap_content"
             android:text="Prasath U"
             android:textSize="14sp"
+            android:transitionName="Logo_desc"
             android:fontFamily="@font/bungee"
             android:layout_toRightOf="@+id/profile_image"
             android:layout_below="@+id/fullname"
