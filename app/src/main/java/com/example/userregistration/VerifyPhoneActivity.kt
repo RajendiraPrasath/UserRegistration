@@ -56,7 +56,7 @@ class VerifyPhoneActivity : AppCompatActivity() {
         progerss = findViewById(R.id.progressbar) as ProgressBar
         progerss.visibility = View.GONE
        userPhoneNumber = intent.getStringExtra("phoneNo")
-       // Log.i("phone ",userPhoneNumber)
+      
         senVerificationCodeToUser(userPhoneNumber)
         verifyButton.setOnClickListener(){
             var manualEnterCode = userEnterPhone.text.toString()
