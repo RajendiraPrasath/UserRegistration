@@ -11,7 +11,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityOptionsCompat
+
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.example.userregistration.model.User
+import com.example.userregistration.viewmodel.FirebaseViewModel
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.loginscreen_layout.*
@@ -27,6 +31,7 @@ class SignUpActivity : AppCompatActivity() {
     lateinit var image : ImageView
     lateinit var logoName : TextView
     lateinit var sloganName : TextView
+    lateinit var viewModel: FirebaseViewModel
     companion object {
         const val CONTACT_REQUEST = 1
     }
@@ -44,7 +49,9 @@ class SignUpActivity : AppCompatActivity() {
         logoName = findViewById(R.id.logo_name) as TextView
         sloganName = findViewById(R.id.slogan_name) as TextView
 
-        dbReference = FirebaseDatabase.getInstance().getReference()
+        //dbReference = FirebaseDatabase.getInstance().getReference()
+
+        viewModel = ViewModelProvider(this@SignUpActivity).get(FirebaseViewModel::class.java)
         register.setOnClickListener(){
 
             if(!validateName() || !validateUserName() ||!validateEmail() || !validatePhoneNo() || !validatePassword()) {
@@ -53,23 +60,16 @@ class SignUpActivity : AppCompatActivity() {
                 verifyPhone(phoneno.editText!!.text.toString())
                 //registerUser()
             }
+            viewModel.firebaseResponse.observe(this@SignUpActivity, Observer {
+
+                Toast.makeText(this@SignUpActivity,it.toString(),Toast.LENGTH_LONG).show()
+
+            })
 
         }
         loginpage.setOnClickListener()
         {
-            var loginIntent = Intent(this@SignUpActivity,LoginActivity::class.java)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-
-                val options = ActivityOptionsCompat.makeSceneTransitionAnimation(this@SignUpActivity,
-                    androidx.core.util.Pair<View, String>(image,"Logo_image"),
-                    androidx.core.util.Pair<View, String>(logoName,"Logo_text"),
-                    androidx.core.util.Pair<View, String>(sloganName,"Logo_desc"),
-                    androidx.core.util.Pair<View, String>(userName,"username_tran"),
-                    androidx.core.util.Pair<View, String>(password,"password_tran"))
-                startActivity(loginIntent,options.toBundle())
-
-            }
-
+            callLoginActivity()
         }
 
     }
@@ -95,7 +95,7 @@ class SignUpActivity : AppCompatActivity() {
     private fun validateUserName() : Boolean
     {
         val usernameValue = fullName.editText!!.text.toString()
-        val noWhiteSpace = "(?=\\S+$)"
+
         if(usernameValue.isNullOrEmpty())
         {
             fullName.error = "Field Cannot be empty"
@@ -204,7 +204,8 @@ class SignUpActivity : AppCompatActivity() {
             email.editText!!.text.toString(),
             phoneno.editText!!.text.toString(),
             password.editText!!.text.toString())
-           dbReference.child("users").child(phoneno.editText!!.text.toString()).setValue(user)
+            viewModel.firebaseInsert(user)
+          /* dbReference.child("users").child(phoneno.editText!!.text.toString()).setValue(user)
             dbReference.addValueEventListener(object: ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot){
                 val userData=dataSnapshot.getValue(User::class.java)
@@ -238,6 +239,42 @@ class SignUpActivity : AppCompatActivity() {
                 //Failed to read value
                 Log.e("User Registran","Failed to read user",error.toException())
             }
-        })
+        })*/
+    }
+    private fun callUserProfileActivity()
+    {
+        val user= User( userName.editText!!.text.toString(),
+            fullName.editText!!.text.toString(),
+            email.editText!!.text.toString(),
+            phoneno.editText!!.text.toString(),
+            password.editText!!.text.toString())
+        val userProfile = Intent(this@SignUpActivity,UserProfileActivity::class.java)
+        userProfile.putExtra("Obj",user)
+        userProfile.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+
+            val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                this@SignUpActivity,
+                androidx.core.util.Pair<View, String>(image, "Logo_image"),
+                androidx.core.util.Pair<View, String>(logoName, "Logo_text"),
+                androidx.core.util.Pair<View, String>(sloganName, "Logo_desc")
+            )
+            startActivity(userProfile)
+        }
+    }
+    private fun callLoginActivity()
+    {
+        var loginIntent = Intent(this@SignUpActivity,LoginActivity::class.java)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+
+            val options = ActivityOptionsCompat.makeSceneTransitionAnimation(this@SignUpActivity,
+                androidx.core.util.Pair<View, String>(image,"Logo_image"),
+                androidx.core.util.Pair<View, String>(logoName,"Logo_text"),
+                androidx.core.util.Pair<View, String>(sloganName,"Logo_desc"),
+                androidx.core.util.Pair<View, String>(userName,"username_tran"),
+                androidx.core.util.Pair<View, String>(password,"password_tran"))
+            startActivity(loginIntent,options.toBundle())
+
+        }
     }
 }

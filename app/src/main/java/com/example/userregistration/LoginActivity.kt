@@ -11,12 +11,16 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityOptionsCompat
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.example.userregistration.model.User
+import com.example.userregistration.viewmodel.FirebaseViewModel
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.database.*
 import org.w3c.dom.Text
 
 class LoginActivity : AppCompatActivity() {
+
     private lateinit var signUp: Button
     lateinit var image: ImageView
     lateinit var logoText: TextView
@@ -25,6 +29,7 @@ class LoginActivity : AppCompatActivity() {
     lateinit var password: TextInputLayout
     lateinit var login: Button
     private lateinit var dbReference: DatabaseReference
+    lateinit var viewModel: FirebaseViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (supportActionBar != null)
@@ -37,23 +42,10 @@ class LoginActivity : AppCompatActivity() {
         phone = findViewById(R.id.username) as TextInputLayout
         password = findViewById(R.id.password) as TextInputLayout
         login = findViewById(R.id.login) as Button
-        dbReference = FirebaseDatabase.getInstance().getReference("users");
+        //dbReference = FirebaseDatabase.getInstance().getReference("users");
+        viewModel = ViewModelProvider(this@LoginActivity).get(FirebaseViewModel::class.java)
         signUp.setOnClickListener(){
-            val signupIntent = Intent(this@LoginActivity, SignUpActivity::class.java)
-            //startActivity(signupIntent)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-
-                val options = ActivityOptionsCompat.makeSceneTransitionAnimation(this@LoginActivity,
-                    androidx.core.util.Pair<View, String>(image,"Logo_image"),
-                    androidx.core.util.Pair<View, String>(logoText,"Logo_text"),
-                    androidx.core.util.Pair<View, String>(sloganText,"Logo_desc"),
-                    androidx.core.util.Pair<View, String>(phone,"username_tran"),
-                    androidx.core.util.Pair<View, String>(password,"password_tran"),
-                    androidx.core.util.Pair<View, String>(login,"button_tran"),
-                    androidx.core.util.Pair<View, String>(signUp,"login_signup_tran"))
-                startActivity(signupIntent,options.toBundle())
-
-            }
+            callSignUpActivity()
         }
         login.setOnClickListener(){
             if(!validateUserName() || !validateEmail())
@@ -64,6 +56,13 @@ class LoginActivity : AppCompatActivity() {
             }
 
         }
+        viewModel.user.observe(this@LoginActivity, Observer {
+            callUserProfileActivity(it)
+        })
+        viewModel.firebaseResponse.observe(this@LoginActivity, Observer {
+            showErrorInvalidLogin(it)
+
+        })
 
     }
     private fun validateUserName() : Boolean
@@ -99,7 +98,8 @@ class LoginActivity : AppCompatActivity() {
     {
         val enteruserName = phone.editText!!.text.toString()
         val enterpassword = password.editText!!.text.toString()
-        var checkUser = dbReference.orderByChild("phoneNo").equalTo(enteruserName)
+        viewModel.getLoginUserDetails(enteruserName, enterpassword)
+        /*var checkUser = dbReference.orderByChild("phoneNo").equalTo(enteruserName)
         checkUser.addListenerForSingleValueEvent( object :ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
 
@@ -143,7 +143,47 @@ class LoginActivity : AppCompatActivity() {
                 //Failed to read value
                 Log.e("User Registran", "Failed to read user", error.toException())
             }
-        })
+        })*/
+    }
+    private fun callUserProfileActivity(user : User)
+    {
+        val userProfile = Intent(this@LoginActivity,UserProfileActivity::class.java)
+        userProfile.putExtra("Obj",user)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+
+            val options = ActivityOptionsCompat.makeSceneTransitionAnimation(this@LoginActivity,
+                androidx.core.util.Pair<View, String>(image,"Logo_image"),
+                androidx.core.util.Pair<View, String>(logoText,"Logo_text"),
+                androidx.core.util.Pair<View, String>(sloganText,"Logo_desc"))
+            startActivity(userProfile,options.toBundle())
+        }
+    }
+    private fun showErrorInvalidLogin(error : String)
+    {
+        if(error.equals("Wrong Password")) {
+            password.error = error
+            password.requestFocus()
+        } else if(error.equals("No such User exist")) {
+            phone.error = error
+            phone.requestFocus()
+        }
+    }
+    private fun callSignUpActivity()
+    {
+        val signupIntent = Intent(this@LoginActivity, SignUpActivity::class.java)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+
+            val options = ActivityOptionsCompat.makeSceneTransitionAnimation(this@LoginActivity,
+                androidx.core.util.Pair<View, String>(image,"Logo_image"),
+                androidx.core.util.Pair<View, String>(logoText,"Logo_text"),
+                androidx.core.util.Pair<View, String>(sloganText,"Logo_desc"),
+                androidx.core.util.Pair<View, String>(phone,"username_tran"),
+                androidx.core.util.Pair<View, String>(password,"password_tran"),
+                androidx.core.util.Pair<View, String>(login,"button_tran"),
+                androidx.core.util.Pair<View, String>(signUp,"login_signup_tran"))
+            startActivity(signupIntent,options.toBundle())
+
+        }
     }
 
 }

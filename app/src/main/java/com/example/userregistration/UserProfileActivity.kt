@@ -6,7 +6,9 @@ import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.lifecycle.ViewModelProvider
 import com.example.userregistration.model.User
+import com.example.userregistration.viewmodel.FirebaseViewModel
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.database.DatabaseReference
@@ -27,6 +29,7 @@ class UserProfileActivity : AppCompatActivity() {
     lateinit var databasepassword : String
     lateinit var databaseusername : String
     private lateinit var dbReference: DatabaseReference
+    lateinit var viewModel: FirebaseViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (supportActionBar != null)
@@ -39,7 +42,8 @@ class UserProfileActivity : AppCompatActivity() {
         userfullname = findViewById(R.id.fullname) as TextView
         userName = findViewById(R.id.username) as TextView
         update = findViewById(R.id.update) as Button
-        dbReference = FirebaseDatabase.getInstance().getReference("users");
+        //dbReference = FirebaseDatabase.getInstance().getReference("users");
+        viewModel = ViewModelProvider(this@UserProfileActivity).get(FirebaseViewModel::class.java)
         setUserDate()
         update.setOnClickListener(){
             updateData()
@@ -80,7 +84,8 @@ class UserProfileActivity : AppCompatActivity() {
             return false
         }else if(!databasefullname.equals(fullName.editableText.toString()))
         {
-            dbReference.child(databasephone).child("fullName").setValue(fullName.editableText.toString())
+            //dbReference.child(databasephone).child("fullName").setValue(fullName.editableText.toString())
+            viewModel.nameUpdate(databasephone,fullName.editableText.toString())
             userfullname.text = fullName.editableText.toString()
             databasefullname = fullName.editableText.toString()
             email.error = null
@@ -97,8 +102,8 @@ class UserProfileActivity : AppCompatActivity() {
         }else if(!databaseemail.equals(email.editableText.toString()))
         {
             if(isValidEmail(email.editableText.toString())) {
-                dbReference.child(databasephone).child("email")
-                    .setValue(email.editableText.toString())
+                viewModel.emailUpdate(databasephone,email.editableText.toString())
+                //dbReference.child(databasephone).child("email").setValue(email.editableText.toString())
                 databaseemail = email.editableText.toString()
                 email.error = null
                 return true
